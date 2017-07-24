@@ -6,6 +6,8 @@ var ds = DashedSentence;
 
 var showProgressBar = false;
 
+//counterOverride = 4;
+
 var defaults = [
     Separator,{
         ignoreFailure: false, 
