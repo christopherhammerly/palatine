@@ -1,4 +1,4 @@
-var shuffleSequence = seq("consent", "setcounter", "background", "intro", "Practice", "presep", "dummysep",
+var shuffleSequence = seq("idtest", "consent", "setcounter", "background", "intro", "Practice", "presep", "dummysep",
                         sepWith("sep", rshuffle(startsWith("cond"), startsWith("filler"))), "exit");
 //var practiceItemTypes = ["Practice"];
 //var progressBarText = ["Progress"];
@@ -34,7 +34,7 @@ function modifyRunningOrder(ro) {
 
 
 var items = [
-
+["idtest", "Form", {consentRequired: true, html: {include: "workerID_test" }} ], 
 ["consent", "Form", {consentRequired: true, html: {include: "consent-2016.html" }} ], 
 ["setcounter", "__SetCounter__", { }],   
 ["background", "Form", {consentRequired: true, html: {include: "background.html" }} ],
