@@ -34,7 +34,7 @@ function modifyRunningOrder(ro) {
 
 
 var items = [
-["idtest", "Form", {consentRequired: true, html: {include: "workerID_test" }} ], 
+["idtest", "Form", {consentRequired: true, html: {include: "workerID_test.html" }} ], 
 ["consent", "Form", {consentRequired: true, html: {include: "consent-2016.html" }} ], 
 ["setcounter", "__SetCounter__", { }],   
 ["background", "Form", {consentRequired: true, html: {include: "background.html" }} ],
