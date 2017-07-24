@@ -1,0 +1,39 @@
+<html>
+<body>
+<div style="width: 40em;">
+<script>
+var workerList = [
+];
+
+function checkWorkerID(wID){
+  priorParticipation = false;
+  for(i=0; i<workerList.length; i++){
+    if(wID == workerList[i]){
+      priorParticipation = true;
+    }
+  }
+  if(priorParticipation){
+    window.alert("You are ineligible to participate in this experiment");
+  }
+  else{
+    if(wID == ''){
+      window.alert("Please enter valid worker ID")
+    }
+    else{
+      window.alert("You ar eligible to participate in this experiment!")
+    }
+  }
+}
+</script>
+
+<p><b>Attention:</b> Mechanical Turk Workers are restricted to only participating in this experiment a single time. Repeat participation <b>will not be compensated</b>. To check if you are eligible for compensation in this experiment, enter your Mechanical Turk worker ID in the field below and click "Check Eligibility".</p>
+
+<form>
+<input type="text" id="workerID" name="workerID"> 
+<button onclick = "checkWorkerID(this.form.workerID.value)">Check Eligibility</button>
+</form>
+
+<p>If you are eligible, click below to continue.</p>
+</div>
+</body>
+</html>
