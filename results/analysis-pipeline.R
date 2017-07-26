@@ -120,12 +120,12 @@ data.acceptability <- subset(data.all.judgments, Experiment %in% c('cond-A', 'co
 #   Separate SPR data and rename column headings
 
 data.spr <- subset(exp.data, Experiment %in% c('cond-A', 'cond-B', 'cond-C','cond-D','cond-E','cond-F','cond-G','cond-H') & TrialType == 'DashedSentence')
-names(data.spr) <- c("Subject","MD5","TrialType","Number","Element","Experiment","Item", "region", "fragment","RT","null","sentence","Modifier","Grammaticality","Attractor")
+names(data.spr) <- c("Subject","MD5","TrialType","Number","Element","Experiment","Item", "region", "fragment","RT","null","sentence","Intervener","Grammaticality","Attractor")
 
 data.spr$RT <- as.numeric(as.character(data.spr$RT))
 
 fillers.spr <-subset(exp.data, Experiment %in% c('filler') & TrialType == 'DashedSentence')
-names(fillers.spr) <- c("Subject","MD5","TrialType","Number","Element","Experiment","Item", "region", "fragment","RT","null","sentence","Modifier","Grammaticality","Attractor")
+names(fillers.spr) <- c("Subject","MD5","TrialType","Number","Element","Experiment","Item", "region", "fragment","RT","null","sentence","Intervener","Grammaticality","Attractor")
 
 fillers.spr$RT <- as.numeric(as.character(fillers.spr$RT))
 
@@ -215,3 +215,104 @@ mandible.means.sem <- ggplot(cond.summ,aes(x=Grammaticality,y=mean_cond,fill=Att
   #scale_fill_manual(values=c("#499fd1","#e05555"))+
   ylab("Rating")+
   facet_grid(.~Intervener)
+
+#################################################
+###                                           ###
+###                 SPR Analysis              ###
+###                                           ###
+#################################################
+
+#   Raw SPR RT distribution for all items and regions
+
+raw.spr.dist <- ggplot(data.spr,aes(x=RT))+
+  geom_histogram(binwidth=50)+
+  xlim(0,7000)+
+  ggtitle("RAW SPR RT DISTRIBUTION")
+
+#   Add log transformed RT as a column in data.spr. This will be used for most analyses
+
+data.spr$logRT <- log(data.spr$RT)
+
+
+#   Log RT distribution across experimental conditions
+
+log.spr.dist <- ggplot(data.spr,aes(x=logRT))+
+  geom_histogram(binwidth=.1)+
+  xlim(4,9)+
+  ggtitle("SPR LOG(RT) DISTRIBUTION")
+
+grid.arrange(raw.spr.dist,log.spr.dist,ncol = 2)
+
+#   Split the data from region 3 and 4
+
+region4.spr <- droplevels(subset(data.spr, region == 4))
+region5.spr <- droplevels(subset(data.spr, region == 5))
+
+
+pirateplot(logRT~Grammaticality+Attractor+Intervener,
+           data=region4.spr,
+           jitter.val = .05,
+           inf.method = "se",
+           inf.within = Subject,
+           cex.lab = .7,
+           cex.axis = .7)
+pirateplot(logRT~Grammaticality+Attractor+Intervener,
+           data=region5.spr,
+           jitter.val = .05,
+           inf.method = "se",
+           inf.within = Subject,
+           cex.lab = .7,
+           cex.axis = .7)
+
+#   Condition summaries for raw RT: Gives mean and SEM by region. This is plotted later
+
+RT.subj.by.cond <- data.spr %>%
+  group_by(Subject, Experiment, Intervener, Grammaticality, Attractor, region) %>%
+  summarise(average = mean(RT))
+
+RT.cond.summ <- RT.subj.by.cond %>%
+  group_by(Experiment, Intervener, Grammaticality, Attractor, region) %>%
+  summarise(mean = mean(average),
+            SEM = sd(average)/sqrt(n_distinct(Subject)))
+
+
+#   Summaries by condition and region for log transformed RT
+
+log.RT.subj.by.cond <- data.spr %>%
+  group_by(Subject, Experiment, Intervener, Grammaticality, Attractor, region) %>%
+  summarise(average = mean(logRT))
+
+log.RT.cond.summ <- log.RT.subj.by.cond %>%
+  group_by(Experiment, Intervener, Grammaticality, Attractor, region) %>%
+  summarise(mean = mean(average),
+            SEM = sd(average)/sqrt(n_distinct(Subject)))
+
+
+#### Plotting raw RT data
+
+
+#### Plotting log transformed RT data
+
+log.RT.cond.summ$Condition <- revalue(log.RT.cond.summ$Experiment, c("cond-A"="SSS","cond-B"="SPS","cond-C"="SSP","cond-D"="SPP","cond-E"="SSS","cond-F"="SPS","cond-G"="SSP","cond-H"="SPP"))
+
+log.RT.cond.summ$region2 <- revalue(log.RT.cond.summ$region, c("1"="The truck","2"="(that parked) beside the motorcycle","3"="apparently was refurbushed","4"="by the collector","5"="over the summer"))
+
+log.spr.plot <- ggplot(data=log.RT.cond.summ, 
+                       aes(x=region, y=mean, 
+                           group=Condition,
+                           shape=Attractor,
+                           linetype = Grammaticality
+                           #color = Attractor
+                       )) + 
+  geom_point(stat = "identity",size=3.5)+
+  geom_errorbar(aes(ymax = mean+SEM,ymin=mean-SEM,width=0.05))+
+  scale_color_grey()+
+  ylab("Log reading time")+
+  xlab("Region")+
+  #scale_color_manual(values = c("#e05555","#499fd1","#a03b3b","#36769b"))+
+  stat_identity(geom="line")+
+  theme(legend.position="bottom",legend.direction="vertical")+
+  facet_grid(.~Intervener,
+             labeller = labeller(Intervener = c("int" = "Intervening",
+                                              "nonint" = "Non-intervening")))
+
