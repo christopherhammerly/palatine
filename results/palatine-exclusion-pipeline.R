@@ -208,6 +208,8 @@ for (i in 1:length(levels(data.demo$Subject))) {
 }
 
 
-data.judge.trimmed <- subset(data.judge, Subject != "1473195073" & Subject != "1473339213" & Subject != "1473340057" & Subject != "1473356919" & Subject != "1473208710" & Subject != "1473265118" & Subject != "1473375948" & Subject != "1473432095" & Subject != "1473432829")
+bad.subj <- c("1501080670","1501084248","1501091688","1501101831")
+
+data.judge.trimmed <- subset(data.judge, !(Subject %in% bad.subj))
 
 xtabs(~ Item + Experiment, data = data.judge.trimmed)

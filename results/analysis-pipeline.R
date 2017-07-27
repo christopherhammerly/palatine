@@ -67,7 +67,7 @@ print(data.raw %>% summarise(number = n_distinct(Subject)))
 #   Remove subjects who were not paid on MTurk due to violating exclusion criteria (determined in
 #   exclusion-pipeline.R)
 
-excluded.subjects <- c()
+excluded.subjects <- c("1501080670","1501084248","1501091688","1501101831")
 data.raw <- droplevels(subset(data.raw, !(Subject %in% excluded.subjects)))
 
 #   Create frame for demographic information
